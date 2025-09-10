@@ -41,6 +41,10 @@ class EnforceReadonlyRule implements Rule
             return [
                 RuleErrorBuilder::message('The class should be readonly.')
                     ->identifier('readonly.class')
+                    ->fixNode($class, function (Class_ $class): Class_ {
+                        $class->flags |= Modifiers::READONLY;
+                        return $class;
+                    })
                     ->build(),
             ];
         }
@@ -149,9 +153,14 @@ class EnforceReadonlyRule implements Rule
                     $errors[] = RuleErrorBuilder::message(
                         sprintf('The readonly class contains redundant readonly property "$%s".', $prop->name->name)
                     )
-                    ->identifier('readonly.redundant')
-                    ->line($prop->getLine())
-                    ->build();
+                        ->identifier('readonly.redundant')
+                        ->line($prop->getLine())
+                        ->fixNode($stmt, function (Property $prop): Property {
+                            $prop->flags &= ~Modifiers::READONLY;
+                            return $prop;
+                        })
+                        ->build();
+                    break;
                 }
             }
         }
@@ -171,9 +180,13 @@ class EnforceReadonlyRule implements Rule
                 $errors[] = RuleErrorBuilder::message(
                     sprintf('The readonly class contains redundant readonly promoted property "$%s".', $param->var->name)
                 )
-                ->identifier('readonly.redundant')
-                ->line($param->getLine())
-                ->build();
+                    ->identifier('readonly.redundant')
+                    ->line($param->getLine())
+                    ->fixNode($param, function (Param $param): Param {
+                        $param->flags &= ~Modifiers::READONLY;
+                        return $param;
+                    })
+                    ->build();
             }
         }
 
@@ -203,18 +216,26 @@ class EnforceReadonlyRule implements Rule
                 $errors[] = RuleErrorBuilder::message(
                     sprintf('The readonly property "$%s" is lately overwritten.', $name)
                 )
-                ->identifier('readonly.overwritten')
-                ->line($param->getLine())
-                ->build();
+                    ->identifier('readonly.overwritten')
+                    ->line($param->getLine())
+                    ->fixNode($param, function (Param $param): Param {
+                        $param->flags &= ~Modifiers::READONLY;
+                        return $param;
+                    })
+                    ->build();
             }
 
             if (!$isReadonly && !$isOverwritten) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf('The property "$%s" should be readonly.', $name)
                 )
-                ->identifier('readonly.property')
-                ->line($param->getLine())
-                ->build();
+                    ->identifier('readonly.property')
+                    ->line($param->getLine())
+                    ->fixNode($param, function (Param $param): Param {
+                        $param->flags |= Modifiers::READONLY;
+                        return $param;
+                    })
+                    ->build();
             }
         }
 

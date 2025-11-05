@@ -11,6 +11,7 @@ use Sal\PhpstanReadonlyEnforcing\Rules\EnforceReadonlyRule;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\Abstract_Readonly;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\CanBeReadonlyExtendsNonReadonly;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\LateInit_Readonly_Traditional;
+use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\MissingType;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\MutableInsideReadonly;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Mixed\Mixed_PromotedPartialReadonly;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Mixed\Mixed_PromotedReadonly_WithTraditional;
@@ -146,6 +147,9 @@ class EnforceReadonlyRuleTest extends RuleTestCase
         ]);
 
         $this->analyseClass(CanBeReadonlyExtendsNonReadonly::class, [
+        ]);
+
+        $this->analyseClass(MissingType::class, [
         ]);
 
         // $this->analyseClass(Trait_Readonly_Use::class, [

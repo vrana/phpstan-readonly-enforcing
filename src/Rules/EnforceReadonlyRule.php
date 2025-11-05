@@ -223,7 +223,7 @@ class EnforceReadonlyRule implements Rule
 
             if ($isReadonly && $isOverwritten) {
                 $errors[] = RuleErrorBuilder::message(
-                    sprintf('The readonly property "$%s" is lately overwritten.', $name)
+                    sprintf('The readonly property "$%s" is later overwritten.', $name)
                 )
                     ->identifier('readonly.overwritten')
                     ->line($param->getLine())

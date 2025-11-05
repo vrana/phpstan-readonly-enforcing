@@ -50,7 +50,7 @@ class EnforceReadonlyRuleTest extends RuleTestCase
         ]);
 
         $this->analyseClass(Promoted_ReadonlyClass_OneOverwritten::class, [
-            ['The readonly property "$name" is lately overwritten.', 11],
+            ['The readonly property "$name" is later overwritten.', 11],
         ]);
 
         $this->analyseClass(Promoted_ReadonlyClass_WithRedundantTraditional::class, [
@@ -67,7 +67,7 @@ class EnforceReadonlyRuleTest extends RuleTestCase
         ]);
 
         $this->analyseClass(Promoted_NonReadonlyClass_OverwrittenReadonly::class, [
-            ['The readonly property "$logger" is lately overwritten.', 10],
+            ['The readonly property "$logger" is later overwritten.', 10],
         ]);
 
         $this->analyseClass(Promoted_NonReadonlyClass_OverwrittenNonReadonly::class, []);
@@ -89,7 +89,7 @@ class EnforceReadonlyRuleTest extends RuleTestCase
         ]);
 
         $this->analyseClass(Abstract_ReadonlyClass_PromotedOverwrite::class, [
-            ['The readonly property "$name" is lately overwritten.', 11],
+            ['The readonly property "$name" is later overwritten.', 11],
         ]);
     }
 

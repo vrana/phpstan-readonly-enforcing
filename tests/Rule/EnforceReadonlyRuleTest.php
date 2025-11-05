@@ -13,6 +13,7 @@ use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\CanBeReadonlyExtendsNonRea
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\LateInit_Readonly_Traditional;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\MissingType;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\MutableInsideReadonly;
+use Sal\PhpstanReadonlyEnforcing\Test\Dummy\EdgeCases\NonPrivate;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Mixed\Mixed_PromotedPartialReadonly;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Mixed\Mixed_PromotedReadonly_WithTraditional;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Promoted\Abstract_NonReadonly_PromotedAllShouldBeReadonly;
@@ -150,6 +151,10 @@ class EnforceReadonlyRuleTest extends RuleTestCase
         ]);
 
         $this->analyseClass(MissingType::class, [
+        ]);
+
+        $this->analyseClass(NonPrivate::class, [
+            ['The property "$e" should be readonly.', 13],
         ]);
 
         // $this->analyseClass(Trait_Readonly_Use::class, [

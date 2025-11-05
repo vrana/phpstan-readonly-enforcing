@@ -144,7 +144,7 @@ class EnforceReadonlyRule implements Rule
             if (in_array($name, $overwrittenProps, true)) {
                 return false;
             }
-            if ($param->type === null) {
+            if ($param->type === null || !$param->isPrivate()) {
                 return false;
             }
         }
@@ -234,7 +234,7 @@ class EnforceReadonlyRule implements Rule
                     ->build();
             }
 
-            if (!$isReadonly && !$isOverwritten && $param->type !== null) {
+            if (!$isReadonly && !$isOverwritten && $param->type !== null && $param->isPrivate()) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf('The property "$%s" should be readonly.', $name)
                 )

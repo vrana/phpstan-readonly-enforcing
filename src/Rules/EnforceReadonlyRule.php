@@ -22,6 +22,12 @@ use ReflectionClass;
  */
 class EnforceReadonlyRule implements Rule
 {
+    public function __construct(
+        private readonly bool $readonlyClasses = true,
+    )
+    {
+    }
+
     public function getNodeType(): string
     {
         return Class_::class;
@@ -37,7 +43,7 @@ class EnforceReadonlyRule implements Rule
         $overwrittenAssignments = $this->getOverwrittenProperties($class);
         $overwrittenProps = array_keys($overwrittenAssignments);
 
-        if ($this->shouldClassBeReadonly($class, $promotedParams, $overwrittenProps)) {
+        if ($this->readonlyClasses && $this->shouldClassBeReadonly($class, $promotedParams, $overwrittenProps)) {
             return [
                 RuleErrorBuilder::message('The class should be readonly.')
                     ->identifier('readonly.class')

@@ -4,9 +4,11 @@ namespace Sal\PhpstanReadonlyEnforcing\Rules;
 
 use PhpParser\Modifiers;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Stmt\Unset_;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\Class_;
@@ -281,15 +283,24 @@ class EnforceReadonlyRule implements Rule
 
     private function collectOverwrittenProperties(Node $node, array &$assignments): void
     {
-        if ($node instanceof Assign && $node->var instanceof PropertyFetch) {
-            $var = $node->var;
+        if ($node instanceof Assign
+            || $node instanceof Expr\AssignRef
+            || $node instanceof Expr\PreDec
+            || $node instanceof Expr\PreInc
+            || $node instanceof Expr\PostDec
+            || $node instanceof Expr\PostInc
+            || $node instanceof Expr\AssignOp
+        ) {
+            $this->addThisProperty($node->var, $assignments);
 
-            if ($var->var instanceof Variable
-                && 'this' === $var->var->name
-                && $var->name instanceof Identifier
-            ) {
-                $propertyName = $var->name->name;
-                $assignments[$propertyName][] = $node;
+            if ($node instanceof Expr\AssignRef) {
+                $this->addThisProperty($node->expr, $assignments);
+            }
+        }
+
+        if ($node instanceof Unset_) {
+            foreach ($node->vars as $var) {
+                $this->addThisProperty($var, $assignments);
             }
         }
 
@@ -304,6 +315,22 @@ class EnforceReadonlyRule implements Rule
             } elseif ($child instanceof Node) {
                 $this->collectOverwrittenProperties($child, $assignments);
             }
+        }
+    }
+
+
+    private function addThisProperty(Expr $var, array &$assignments): void {
+        if ($var instanceof Expr\ArrayDimFetch) {
+            $var = $var->var;
+        }
+
+        if ($var instanceof PropertyFetch
+            && $var->var instanceof Variable
+            && 'this' === $var->var->name
+            && $var->name instanceof Identifier
+        ) {
+            $propertyName = $var->name->name;
+            $assignments[$propertyName][] = $var;
         }
     }
 

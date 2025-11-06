@@ -22,6 +22,7 @@ use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Promoted\Abstract_Readonly_PromotedA
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Promoted\Abstract_Readonly_PromotedOneOverwritten;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Promoted\Abstract_ReadonlyClass_PromotedOverwrite;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Promoted\Promoted_NonReadonlyClass_AllShouldBeReadonly;
+use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Promoted\Promoted_NonReadonlyClass_Indirect;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Promoted\Promoted_NonReadonlyClass_OneReadonly;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Promoted\Promoted_NonReadonlyClass_OverwrittenNonReadonly;
 use Sal\PhpstanReadonlyEnforcing\Test\Dummy\Promoted\Promoted_NonReadonlyClass_OverwrittenReadonly;
@@ -43,7 +44,7 @@ class EnforceReadonlyRuleTest extends RuleTestCase
         return new EnforceReadonlyRule();
     }
 
-    public function testPromotedReadonlyClass(): void
+    public function testPromoted(): void
     {
         $this->analyseClass(Promoted_ReadonlyClass_AllReadonly::class, [
             ['The readonly class contains redundant readonly promoted property "$logger".', 10],
@@ -72,6 +73,8 @@ class EnforceReadonlyRuleTest extends RuleTestCase
         ]);
 
         $this->analyseClass(Promoted_NonReadonlyClass_OverwrittenNonReadonly::class, []);
+
+        $this->analyseClass(Promoted_NonReadonlyClass_Indirect::class, []);
 
         $this->analyseClass(Abstract_NonReadonly_PromotedAllShouldBeReadonly::class, [
             ['The class should be readonly.', 7],
@@ -138,6 +141,7 @@ class EnforceReadonlyRuleTest extends RuleTestCase
     {
         $this->analyseClass(MutableInsideReadonly::class, [
             ['The readonly class contains redundant readonly promoted property "$data".', 8],
+            ['The readonly property "$data" is later overwritten.', 8],
         ]);
 
         $this->analyseClass(LateInit_Readonly_Traditional::class, [
